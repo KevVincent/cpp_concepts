@@ -1,25 +1,19 @@
+#include "node.hpp"
+
 #include <iostream>
 #include <memory>
 #include <utility>
-template <typename T>
-struct Node
-{
-  T value;
-  std::unique_ptr<Node<T>> next;
-  explicit Node(T v) : value(v)
-  {
-  }
-};
 
-template <typename T>
+#include "linked_lists/helper_functions.hpp"
+
+template <Printable T>
 struct MyStack
 {
   std::unique_ptr<Node<T>> head;
   void push_back(T new_value)
   {
-    auto temp = std::make_unique<Node<T>>(new_value);
-    temp->next = std::move(head);
-    head = std::move(temp);
+    auto temp_head = std::move(head);
+    head = std::move(helpers::appendAtStartAndReturn(std::move(temp_head), new_value));
   }
   void pop()
   {
@@ -27,9 +21,8 @@ struct MyStack
     {
       return;
     }
-    auto next_head = std::move(head->next);
-    head.reset();
-    head = std::move(next_head);
+    auto temp_head = std::move(head);
+    head = std::move(helpers::removeAtStartAndReturn(std::move(temp_head)));
   }
   void peek()
   {
@@ -38,7 +31,7 @@ struct MyStack
       std::cout << "Stack empty\n";
       return;
     }
-    std::cout << "The number is : " << head->value << "\n";
+    std::cout << "The number is : " << head->value_ << "\n";
   }
 };
 int main()
